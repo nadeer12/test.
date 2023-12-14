@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Data Display</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .data-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        #currency, #user {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        #item {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <h1>API- Data Display</h1>
+
+    <button onclick="getApiData()">Get Data</button>
+    <button onclick="clearResult()">Clear</button>
+    <button onclick="fetchDataAndShowAlert()">Fetch first</button>
+
+    <div class="data-container">
+        <div id="currency">
+            <h2>Currency Data</h2>
+            <div id="currencyResult"></div>
+        </div>
+
+        <div id="user">
+            <h2>User Data</h2>
+            <div id="userResult"></div>
+        </div>
+    </div>
+
+    <div id="item">
+        <h2>Item Data</h2>
+        <div id="itemResult"></div>
+    </div>
+
+    <script>
+        let currencyData = []; // Variable to store currency data
+        let firstDataCurrency; // Variable to store the first element of currency data
+        let cleanedFirstDataCurrency;
+        
+        function getApiData() {
+            setTimeout(function () {
+                window['ApiData_item'].postMessage('http://eademoapi.linkwayapps.com/api/item');
+            }, 3000);
+
+            setTimeout(function () {
+                window['ApiData_user'].postMessage('http://eademoapi.linkwayapps.com/api/user');
+            }, 9000);
+
+            setTimeout(function () {
+                window['ApiData_currency'].postMessage('http://eademoapi.linkwayapps.com/api/currency');
+            }, 10000);
+            
+
+        }
+
+        function displayApiData(data, apiType) {
+            const resultContainer = document.getElementById(apiType + 'Result');
+            const dataDisplay = document.createElement('pre');
+            dataDisplay.textContent = JSON.stringify(data, null, 2);
+            resultContainer.appendChild(dataDisplay);
+            if (apiType === 'currency') {
+            // Store currency data in the variable
+            currencyData = data;
+
+                // Check if currencyData has elements
+                if (currencyData.length > 0) {
+                    // Store the first element of currency data in the variable
+                    firstDataCurrency = currencyData[0];
+
+                   const cleanedFirstDataCurrency = firstDataCurrency.replace(/"/g, '');
+
+                    // Display the cleanedFirstDataCurrency in an alert
+                alert("first data in currency: " + cleanedFirstDataCurrency);
+                }
+                    
+            }
+        }
+
+        function displayApiError(error) {
+            const resultContainer = document.getElementById('result');
+            const errorDisplay = document.createElement('p');
+            errorDisplay.textContent = error;
+            resultContainer.appendChild(errorDisplay);
+        }
+
+        function clearResult() {
+            document.getElementById('currencyResult').innerHTML = '';
+            document.getElementById('userResult').innerHTML = '';
+            document.getElementById('itemResult').innerHTML = '';
+        }
+
+    function fetchDataAndShowAlert() {
+        const apiUrl = 'http://eademoapi.linkwayapps.com/api/currency/getcurrency?currencysymbol=omr';
+
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok, status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => alert(JSON.stringify(data, null, 2)))
+            .catch(error => alert(`Error: ${error.message}`));
+    }
+
+
+    </script>
+</body>
+</html>
